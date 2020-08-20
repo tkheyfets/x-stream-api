@@ -8,13 +8,13 @@ class EventSourceController < ApplicationController
     headers["Content-Type"] = "text/event-stream"
     unique = (Time.current.to_f * 1_000).to_i
     sse = SSE.new(response.stream, retry: 300)
-    sse.write({ chunkSize: FLUSH_EVERY, total: NUMBERS_COUNT }.to_json, event: 'header', id: unique )
+    sse.write({ chunkSize: FLUSH_EVERY, total: NUMBERS_COUNT }, event: 'header', id: unique )
     bufferArray = []
     unique += 1
     NUMBERS_COUNT.times do |i|
         bufferArray.push(random_number_object_lazy(i))
         if i % FLUSH_EVERY == 0 && i != 0
-          sse.write(bufferArray.to_json, event: 'data', id: unique)	
+          sse.write(bufferArray, event: 'data', id: unique)	
           bufferArray.clear
           unique += 1
         end 
